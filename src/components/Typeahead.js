@@ -4,9 +4,9 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   display: flex;
   padding: 10% 15% 0% 10%;
-  justify-content: center;
+  /* justify-content: center; */
   flex-direction: column;
-  align-content: stretch;
+  align-items: center;
   height: 100vh;
   width: 100%;
 `;
@@ -39,18 +39,18 @@ const SearchInput = styled.input`
   }
 `;
 
-const NoResultsField = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-`;
+// const NoResultsField = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   width: 100%;
+//   height: 100%;
+// `;
 
 const ResultsField = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: auto;
   border-radius: 5px;
 `;
 
@@ -68,13 +68,39 @@ const Suggestion = styled.li`
     background-color: lightyellow;
   }
 `;
+const Prediction = styled.span`
+  font-weight: bold;
+`;
 
-const Typeahead = ({ suggestions, handleSelect }) => {
+const PinkSpan = styled.span`
+  color: purple;
+  font-style: italic;
+`;
+
+const Typeahead = ({ suggestions, handleSelect, categories }) => {
   const [value, setValue] = React.useState("");
   const filteredBooks = suggestions.filter((book) => {
-    if (value.length >= 3) {
-      return book.title.toLowerCase().includes(value.toLowerCase());
-    }
+    return value.length >= 3
+      ? book.title.toLowerCase().includes(value.toLowerCase())
+      : false;
+  });
+  const listOutput = filteredBooks.map((book) => {
+    const title = book.title;
+    let position =
+      title.toLowerCase().search(value.toLowerCase()) + value.length;
+    let firstHalf = title.slice(0, position);
+    let secondHalf = title.slice(position);
+    return (
+      <Suggestion key={book.id} onClick={(ev) => handleSelect(book.title)}>
+        <span>
+          {firstHalf}
+          <Prediction>{secondHalf}</Prediction>
+
+          {" in "}
+          <PinkSpan>{categories[book.categoryId].name}</PinkSpan>
+        </span>
+      </Suggestion>
+    );
   });
   // console.log("filteredBooks", filteredBooks);
   return (
@@ -93,30 +119,12 @@ const Typeahead = ({ suggestions, handleSelect }) => {
         <button onClick={() => setValue("")}>Clear</button>
         <h2>{console.log("searchinput", value.length)}</h2>
       </InputClear>
-
-      {filteredBooks.forEach((book) => {
-        if (value.length <= 3) { 
-          <NoResultsField />
-        } else {
-           if (book.title.toLowerCase().includes(value.toLowerCase())) {
-        <ResultsField>
-          <ResultsFieldChild>
-            <ul>
-              {filteredBooks.map((book) => {
-                return (
-                  <Suggestion
-                    key={book.id}
-                    onClick={(ev) => handleSelect(book.title)}
-                  >
-                    {book.title}
-                  </Suggestion>
-                );
-              })}
-            </ul>
-          </ResultsFieldChild>
-            </ResultsField>} else {
-        <NoResultsField />}
-      }
+      <ResultsField>
+        <ResultsFieldChild>
+          <ul>{listOutput}</ul>
+        </ResultsFieldChild>
+      </ResultsField>
+      {/* <NoResultsField /> */}
     </Wrapper>
   );
 };
@@ -127,6 +135,18 @@ suggestions.filter
 check if each books title includes the letters that have been typed in so far
 my input is in value, so i check if it's in value
 value.length >= 3
+
+{filteredBooks.map((book) => {
+              return (
+                <Suggestion
+                  key={book.id}
+                  onClick={(ev) => handleSelect(book.title)}
+                >
+                  {book.title}
+                </Suggestion>
+              );
+            })}
+
 */
 
 /*
