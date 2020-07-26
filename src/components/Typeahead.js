@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   display: flex;
-  border: solid 10px red;
-  padding: 20% 15% 0% 10%;
+  padding: 10% 15% 0% 10%;
+  justify-content: center;
   flex-direction: column;
   align-content: stretch;
   height: 100vh;
@@ -13,11 +13,18 @@ const Wrapper = styled.div`
 const InputClear = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
-  /* margin: 30% 15% 0 15%; */
-  /* padding: 150px 0px 150px 0px; */
-  /* margin: 10% 0% 10 0%; */
-  border: solid 10px blue;
+
+  button {
+    width: 10%;
+    height: 80%;
+    margin: 0px 5px 0px 5px;
+    border-radius: 5px;
+    background-color: blue;
+    color: white;
+    font-size: 20px;
+  }
 `;
 const SearchInput = styled.input`
   width: 60%;
@@ -31,13 +38,32 @@ const SearchInput = styled.input`
     box-shadow: -1px 0px 17px -9px rgba(0, 0, 0, 1);
   }
 `;
+
+const NoResultsField = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+`;
+
 const ResultsField = styled.div`
   display: flex;
   justify-content: center;
-  border: solid 10px green;
+  width: 100%;
   height: 100%;
+  border-radius: 5px;
+`;
+
+const ResultsFieldChild = styled.div`
+  width: 71%;
+  height: 100%;
+  box-shadow: 1px 28px 34px -9px rgba(0, 0, 0, 0.21);
 `;
 const Suggestion = styled.li`
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 5px;
   &:hover {
     background-color: lightyellow;
   }
@@ -65,21 +91,32 @@ const Typeahead = ({ suggestions, handleSelect }) => {
           }}
         />
         <button onClick={() => setValue("")}>Clear</button>
+        <h2>{console.log("searchinput", value.length)}</h2>
       </InputClear>
-      <ResultsField>
-        <ul>
-          {filteredBooks.map((book) => {
-            return (
-              <Suggestion
-                key={book.id}
-                onClick={(ev) => handleSelect(book.title)}
-              >
-                {book.title}
-              </Suggestion>
-            );
-          })}
-        </ul>
-      </ResultsField>
+
+      {filteredBooks.forEach((book) => {
+        if (value.length <= 3) { 
+          <NoResultsField />
+        } else {
+           if (book.title.toLowerCase().includes(value.toLowerCase())) {
+        <ResultsField>
+          <ResultsFieldChild>
+            <ul>
+              {filteredBooks.map((book) => {
+                return (
+                  <Suggestion
+                    key={book.id}
+                    onClick={(ev) => handleSelect(book.title)}
+                  >
+                    {book.title}
+                  </Suggestion>
+                );
+              })}
+            </ul>
+          </ResultsFieldChild>
+            </ResultsField>} else {
+        <NoResultsField />}
+      }
     </Wrapper>
   );
 };
@@ -89,7 +126,7 @@ export default Typeahead;
 suggestions.filter
 check if each books title includes the letters that have been typed in so far
 my input is in value, so i check if it's in value
-
+value.length >= 3
 */
 
 /*
